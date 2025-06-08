@@ -166,7 +166,7 @@ def normalize_objective(accuracy=0, processing_time=0, test=False):
     return result, result_json
 
 def init_knobs():
-    # it only represents categorizes.
+    # it only represents categorizes. each camera has 7 candidate configurations.
     type1 = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     type2 = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     type3 = ['a', 'b', 'c', 'd', 'e', 'f', 'g']

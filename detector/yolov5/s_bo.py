@@ -62,7 +62,7 @@ def multi_camera_matching(config: sp.Configuration):
     # convert Configuration into Python dict.
     params = config.get_dictionary().copy()
     FPS_CHOICE = ["1", "2", "5", "8", "10"]
-    RESOLUTION_CHOICE = ["480", "600", "720", "840", "960"]
+    TRACK_CHOICE = ["1", "2", "5", "8", "10"]
     SIZE_CHOICE = ["yolov5s.pt", "yolov5m.pt", "yolov5l.pt","yolov5x.pt"]
     weights = []
     imgsz = []
@@ -70,9 +70,9 @@ def multi_camera_matching(config: sp.Configuration):
     global GPU_ID
     weight_name = 'model_size_camera'
     fps_name = 'fps_camera'
-    resolution_name = 'resolution_camera'
+    track_name = 'track_camera'
     weights.append(params[weight_name])
-    imgsz.append(int(params[resolution_name]))
+    imgsz.append(int(params[track_name]))
     cams_ratio.append(int(params[fps_name]))
     # lazy_threshold = params['lazy_threshold']
     with open(config_file_name, 'a') as file:
@@ -113,23 +113,23 @@ def normalize_objective(accuracy=0, processing_time=0, test=False):
 
 def init_knobs():
     FPS_CHOICE = ["1", "2", "5", "8", "10"]
-    RESOLUTION_CHOICE = ["480", "600", "720", "840", "960"]
+    TRACK_CHOICE = ["1", "2", "5", "8", "10"]
     SIZE_CHOICE = ["yolov5s.pt", "yolov5m.pt", "yolov5l.pt","yolov5x.pt"]
     
-    return FPS_CHOICE, RESOLUTION_CHOICE, SIZE_CHOICE
+    return FPS_CHOICE, TRACK_CHOICE, SIZE_CHOICE
 
 
  
 class bayedian_optimization():
-    def __init__(self, camera_num, fps_choice, resolotion_choice, size_choice, ref_point=[], cluster_id=0):
+    def __init__(self, camera_num, fps_choice, track_choice, size_choice, ref_point=[], cluster_id=0):
         self.ref_point = ref_point
         self.space = sp.Space()
         self.camera_num = camera_num
         self.cluster_id = cluster_id
-        self.FPS_CHOICE, self.RESOLUTION_CHOICE, self.SIZE_CHOICE, self.matching_low_bound = fps_choice, resolotion_choice, size_choice, matching_low_bound
+        self.FPS_CHOICE, self.TRACK_CHOICE, self.SIZE_CHOICE, self.matching_low_bound = fps_choice, track_choice, size_choice, matching_low_bound
         knobs = []
         knobs.append(sp.Categorical('fps_camera', self.FPS_CHOICE))
-        knobs.append(sp.Categorical('resolution_camera', self.RESOLUTION_CHOICE))
+        knobs.append(sp.Categorical('track_camera', self.TRACK_CHOICE))
         knobs.append(sp.Categorical('model_size_camera', self.SIZE_CHOICE))
         # q表示采样间隔
         # knobs.append(sp.Real('lazy_threshold', matching_low_bound, matching_upper_bound, default_value = 0.7, q = 0.02))
@@ -163,8 +163,8 @@ class bayedian_optimization():
         
 if __name__ == "__main__":
     # mp.set_start_method(method='spawn',force=True)  # force all the multiprocessing to 'spawn' methods
-    FPS_CHOICE, RESOLUTION_CHOICE, SIZE_CHOICE = init_knobs()
+    FPS_CHOICE, TRACK_CHOICE, SIZE_CHOICE = init_knobs()
 
     ref_point = [1,1]
-    bo = bayedian_optimization(camera_num=camera_num, fps_choice=FPS_CHOICE, resolotion_choice = RESOLUTION_CHOICE, size_choice=SIZE_CHOICE, ref_point=ref_point, cluster_id=0)
+    bo = bayedian_optimization(camera_num=camera_num, fps_choice=FPS_CHOICE, track_choice = TRACK_CHOICE, size_choice=SIZE_CHOICE, ref_point=ref_point, cluster_id=0)
     bo.start_optimize() 
